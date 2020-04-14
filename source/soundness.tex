@@ -1,0 +1,583 @@
+\documentclass[dvipdfmx,cjk]{beamer} 
+
+\AtBeginDvi{\special{pdf:tounicode 90ms-RKSJ-UCS2}}
+
+\usetheme{CambridgeUS}
+
+\usepackage{bussproofs} %% For proof tree
+\usepackage{ cmll } %% For connective ``par''
+\usepackage[all,cmtip]{xy} %% For Hasse diagram of LL
+\usepackage{amsmath}
+\usepackage{lipsum} %% For dummy text
+
+\setbeamertemplate{theorems}[numbered]
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{proposition}[thm]{Proposition}
+\theoremstyle{example}
+\newtheorem{exam}[thm]{Example}
+\newtheorem{remark}[thm]{Remark}
+\newtheorem{question}[thm]{Question}
+\newtheorem{prob}[thm]{Problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\title[LL]{Soundness for Linear Logic regarding Phase Semantics} 
+\author[Haruyama]{Ryo Haruyama}
+\institute[Nagoya Univ.]{Nagoya Univ.}
+\date{\today}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}
+  One kind of soundness for Linear Logic as to Phase Semantics is dealt with.
+  \tableofcontents
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{What is Linear Logic?}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                          
+\begin{frame}
+  \frametitle{What is Linear Logic?}
+  Features:
+
+  \begin{itemize}
+    \item Decomposition of Classical Logic 
+    \item Realizing constructivity keeping Duality (symmetry) intact 
+    \item Resource sensitive (i.e. each hypothesize can be used exactly at once) 
+    \item Suitable for expressing parallel computing
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \frametitle{Decomposition of Classical Logic} 
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    Familiar connectives ``$\wedge$'' and ``$\vee$'' break into weaker four connectives:
+
+    \begin{itemize}
+      \item ``$\wedge$'' into ``$\otimes$'' and ``$\with$'' 
+      \item ``$\vee$''   into ``$\parr$''   and ``$\oplus$'' 
+    \end{itemize}
+
+    Another viewpoint:
+
+    \begin{itemize}
+      \item \textit{Multiplicative} are ``$\otimes$'' and ``$\parr$'' 
+      \item \textit{Additive} are ``$\with$''   and ``$\oplus$'' 
+    \end{itemize}
+
+    System containing only Multiplicative and Additive is called \textit{MALL}
+    
+\end{frame}
+
+\begin{frame}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \frametitle{Resource sensitiveness} 
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  ``$\multimap$'' is linear version of ``$\Rightarrow$'' \\~\\
+
+  Usual logic :
+  \begin{prooftree}
+      \AxiomC{$X$}
+      \AxiomC{$X \Rightarrow Y$}
+      \BinaryInfC{$Y$ (but $X$ still holds.)}
+  \end{prooftree} 
+
+  Linear Logic :
+  \begin{prooftree}
+      \AxiomC{$X$}
+      \AxiomC{$X \multimap Y$}
+      \BinaryInfC{$Y$ (and then $X$ disappears!)}
+  \end{prooftree}
+
+\end{frame}
+
+\begin{frame}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \frametitle{$\otimes$ : Tensor, suitable for expressing parallel computing} 
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  \begin{prooftree}
+
+    \AxiomC{$f : A \multimap B$}
+    \AxiomC{$g : C \multimap D$}
+    \BinaryInfC{$f \otimes g : A \otimes B \multimap C \otimes D$}
+    
+  \end{prooftree} 
+
+  Meaning : Programs which do NOT share the same resouce can be executed
+  at the same time.
+
+\end{frame}
+
+\begin{frame}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \frametitle{$\with$ : Cartesian product} 
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+  \begin{prooftree}
+
+    \AxiomC{$f : X \multimap Y$}
+    \AxiomC{$g : X \multimap Z$}
+    \BinaryInfC{$f \with g : X \multimap Y \with Z$}
+    
+  \end{prooftree}
+
+  and
+
+  \begin{prooftree}
+
+    \AxiomC{$Y \with Z \nvdash Y \otimes Z$}
+    
+  \end{prooftree}
+
+  Meaning : Programs which share the same resouce CANNOT be executed
+  at the same time unless copying the resource,
+  while we CAN CHOOSE either $Y$ or $Z$. \\
+  In fact, copying and deleting of resources are explicit.
+
+\end{frame}
+
+\begin{frame}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \frametitle{$\oplus$ : Additive Sum, dual of ``$\with$''} 
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+  \begin{prooftree}
+
+    \AxiomC{$Y \oplus Z \nvdash Y$}
+    
+  \end{prooftree}
+
+  nor
+
+  \begin{prooftree}
+
+    \AxiomC{$Y \oplus Z \nvdash Z$}
+    
+  \end{prooftree} 
+
+  Meaning : Either $Y$ or $Z$ holds, but we CANNOT choose neither $Y$ or $Z$.
+
+\end{frame}
+
+\begin{frame}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \frametitle{Off topic: Variants of Linear Logic}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  \begin{itemize}
+      \item Multiplicative are ``$\otimes$'' and ``$\parr$'' 
+      \item Additive are ``$\with$''   and ``$\oplus$''
+      \item \textit{Exponential} are ``$!$'' and ``$?$''
+  \end{itemize}
+
+  \[
+      \xymatrix{
+        & MAELL \ar@{-}[dr] \ar@{-}[dl] \\
+        MALL \ar@{-}[dr] & & MELL \ar@{-}[dl] \\
+        & MLL
+      }
+   \]      
+  
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{What is Phase Semantics?}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                          
+\begin{frame}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                          
+  \frametitle{What is Phase Semantics?}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  First off, what is \textit{semantics}?
+
+  \begin{itemize}
+    \item To provide rigorous defnitions that abstract away from implementation
+      details
+    \item To provide mathematical tools for proving properties of programs
+  \end{itemize}
+   (Amadio, Curien)\\~\\
+
+  Phase Semantics is a kind of semantics, which is based on the idea of \textit{Tarskian style}: \\
+
+  \begin{itemize}
+    \item ``A'' means A which is truth value (true or false)
+    \item ``A $\wedge$ B'' means ``A'' and ``B''
+  \end{itemize}
+
+  and so on.\\
+
+  This seems ovious, however, there is another semantics which is not the case: \textit{Coherent Semantics}, which is BHK style inconsistent semantics. \\
+
+  \textit{Phase Space} is Phase Semantics for MALL.
+  
+\end{frame}
+
+\begin{frame}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \frametitle{Other semantics}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  \begin{itemize}
+    \item Coherent semantics
+    \item Categorical semantics
+    \item Geometry of interaction
+    \item Game semantics \\
+      and so on.
+  \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{What is soundness?}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                          
+\begin{frame}
+  \frametitle{What is \textit{soundness}?} 
+
+  Formulae derived using specific rules are semantically valid, which is minimum requirement for semantics in general (Systems which yields lie are compeletely useless).
+  
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Proof of soundness}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \frametitle{Syntax of MALL}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{definition}{Formula of MALL.}
+    \begin{align*}
+      A ::&= p              \; | \;
+             p^{\bot}        \\
+      &| \;
+             A \otimes A    \; | \;
+             A \oplus  A    \\
+      &| \;
+             A \with A      \; | \;
+             A \parr A      \\
+      &| \;
+             \textbf{1}     \; | \;
+             \textbf{0}     \; | \;
+             \top           \; | \;
+             \bot
+    \end{align*}
+  \end{definition}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \frametitle{Inference rules of MALL}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  Inference rules of MALL.
+    \begin{center}
+      
+      \RightLabel{(\textit{identity})}
+      \AxiomC{}
+      \UnaryInfC{$ \vdash A, A^\bot $}
+      \DisplayProof
+      \hskip 2.0em
+      \RightLabel{(\textit{cut})}
+      \AxiomC{$\vdash \Gamma, A$}
+      \AxiomC{$\vdash A^\bot, \Delta$}
+      \BinaryInfC{$\vdash \Gamma, \Delta$}
+      \DisplayProof \\[0.5em]
+
+      \RightLabel{(\textit{exchange})}
+      \AxiomC{$ \vdash \Gamma, A, B, \Delta $}
+      \UnaryInfC{$ \vdash \Gamma, B, A, \Delta $}
+      \DisplayProof \\[0.5em]
+
+      \RightLabel{(\textit{one})}
+      \AxiomC{}
+      \UnaryInfC{$ \vdash \textbf{1} $}
+      \DisplayProof
+      \hskip 2.0em
+      \RightLabel{(\textit{false})}
+      \AxiomC{$ \vdash \Gamma $}
+      \UnaryInfC{$ \vdash \Gamma, \bot $}
+      \DisplayProof \\[0.5em]
+
+      \framebreak
+
+      \RightLabel{(\textit{times})}
+      \AxiomC{$ \vdash \Gamma, A $}
+      \AxiomC{$ \vdash \Gamma, B $}
+      \BinaryInfC{$ \vdash \Gamma, A \otimes B, \Delta $}
+      \DisplayProof
+      \hskip 2.0em
+      \RightLabel{(\textit{par})}
+      \AxiomC{$ \vdash \Gamma, A, B $}
+      \UnaryInfC{$ \vdash \Gamma, A \parr B $}
+      \DisplayProof \\[0.5em]
+      
+      \RightLabel{(\textit{true})}
+      \AxiomC{}
+      \UnaryInfC{$ \vdash \Gamma, \top $}
+      \DisplayProof
+      \hskip 2.0em
+      (\textit{no rule for zero}) \\[0.5em]
+      
+      \RightLabel{(\textit{with})}
+      \AxiomC{$ \vdash \Gamma, A $}
+      \AxiomC{$ \vdash \Gamma, B $}
+      \BinaryInfC{$ \vdash \Gamma, A \with B $}
+      \DisplayProof
+      \hskip 2.0em
+      \RightLabel{(\textit{left plus})}
+      \AxiomC{$ \vdash \Gamma, A $}
+      \UnaryInfC{$ \vdash \Gamma, A \oplus B $}
+      \DisplayProof
+      \RightLabel{(\textit{right plus})}
+      \AxiomC{$ \vdash \Gamma, B $}
+      \UnaryInfC{$ \vdash \Gamma, A \oplus B $}
+      \DisplayProof
+      
+    \end{center}
+\end{frame}
+
+\begin{frame}
+  %%%%%%%%%%%%%%%%%%%%%%%%
+  \frametitle{Phase Space}
+  %%%%%%%%%%%%%%%%%%%%%%%%
+
+  We give semantics for MALL.
+  \begin{definition}{Phase Space $ := (M, \bot) $} \\
+    where $M$ is commutative monoid and $\bot \subseteq M$ is defined.
+  \end{definition}
+
+  \begin{definition}{Commutative monoid $M$} holds \\
+    \begin{itemize}
+      \item commutativity: $pq = qp$
+      \item associativity: $(pq)r = p(qr)$
+      \item identity: $1p = p1 = p$
+    \end{itemize}
+    for all $p, q, r \in M$.
+  \end{definition}
+  
+\end{frame}
+
+\begin{frame}
+  
+  \begin{definition}{$X \multimap Y$}
+    is defined as 
+    \begin{align*}
+      & m \in X \multimap Y \\
+      & :\Leftrightarrow \forall x (x \in X \Rightarrow mx \in Y)
+    \end{align*}
+  \end{definition}
+
+  \begin{definition}{orthogonal}
+    \[
+      X^\bot := X \multimap \bot
+    \]
+  \end{definition}
+
+  \begin{definition}{X is \textit{fact}} iff
+    \[
+     X = X^{\bot\bot}
+    \]
+    or equivalently, $X$ is of the form $Y^\bot$.
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  \begin{definition}
+    For convention,
+    \begin{align*}
+      & xy \in X.Y :\Leftrightarrow x \in X \land y \in Y 
+    \end{align*}
+    Connectives are interpreted in this way (more precisely, we are defining interpretation function from $formula$ to $\wp{(M)}$):
+    \begin{align*}
+     & X \otimes Y := (X.Y)^{\bot\bot} \\
+     & X \parr   Y := (X^\bot.Y^\bot)^\bot \\
+     & X \multimap Y = (X.Y^\bot)^\bot \\
+     & X \with Y := X \cap Y \\
+     & X \oplus Y := (X \cup Y)^{\bot\bot} \\
+     & \textbf{1} := \{1\}^{\bot\bot} \\
+     & \textbf{0} := \varnothing^{\bot\bot} \\
+     & \top := M
+    \end{align*}
+  \end{definition}
+\end{frame}
+
+\begin{frame}
+  %%%%%%%%%%%%%%%%%%%%%%%%%
+  \frametitle{Validity}
+  %%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{definition}
+    Sequent \\
+    \[ \vdash \Gamma, A\] \\
+    is interpreted as subset of M \\
+    \[ \Gamma \parr A \]
+  \end{definition}
+  
+  \begin{definition}{\underbar{X} (as formula) is valid} iff
+    $ 1 \in \underbar{X} $
+    ($ \underbar{X} \subseteq M $)
+  \end{definition}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \frametitle{Proof of soundness}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{theorem}
+    Sequent which are provable in MALL are all valid in Phase Space \\
+    i. e. \[
+        \vdash \underbar{X} \Rightarrow 1 \in \underbar{X}
+    \]
+  \end{theorem}
+
+    By straightforward induction on inference rules.
+    \begin{enumerate}
+      \item % (i)
+        \RightLabel{(\textit{identity})}
+        \AxiomC{}
+        \UnaryInfC{$ \vdash A, A^\bot $}
+        \DisplayProof \\
+        \[ A \parr A^\bot = A \multimap A \ni 1
+        \]
+        ($\because$ definition of identity 1)
+
+      \item % (ii)
+        \RightLabel{(\textit{true})}
+        \AxiomC{}
+        \UnaryInfC{$ \vdash \Gamma, \top $}
+        \DisplayProof \\
+        \[
+          \Gamma \parr \top = \textbf{0} \multimap \Gamma 
+        \]
+        Since $\textbf{0}$ is the smallest fact, $\textbf{0} \subseteq \Gamma$.
+        This implies $\forall z, z \in \textbf{0} \Rightarrow z \in \Gamma$.
+        Hence $\forall z, z \in \textbf{0} \Rightarrow 1z \in \Gamma$. \\
+        $\therefore$ By definition of ``$\multimap$'',
+        $1 \in \textbf{0} \multimap \Gamma = \Gamma \parr \top$
+
+      \item % (iii)
+        \RightLabel{(\textit{one})}
+        \AxiomC{}
+        \UnaryInfC{$ \vdash \textbf{1} $}
+        \DisplayProof \\
+        Oviously,
+        \[
+         1 \in \{1\} \subseteq \{1\}^{\bot\bot} = \textbf{1}
+        \]
+
+      \item % (iv)
+        \RightLabel{(\textit{cut})}
+        \AxiomC{$\vdash \Gamma, A$}
+        \AxiomC{$\vdash A^\bot, \Delta$}
+        \BinaryInfC{$\vdash \Gamma, \Delta$}
+        \DisplayProof \\
+        We have to show that if $1 \in \Gamma \parr A$ and $1 \in A^\bot \parr \Delta$
+        then $1 \in \Gamma \parr \Delta$. In fact this is equivalent to
+        \begin{align*}
+                     & 1 \in \Gamma^\bot \multimap A, 1 \in A \multimap \Delta \\
+         \Rightarrow & 1 \in \Gamma^\bot \multimap \Delta
+        \end{align*}
+         This is easily followed by
+        \begin{align*}
+                     & \Gamma^\bot \subseteq A, A \subseteq \Delta \\
+         \Rightarrow & \Gamma^\bot \subseteq \Delta
+        \end{align*}
+
+      \item % (v)
+        \RightLabel{(\textit{exchange})}
+        \AxiomC{$ \vdash \Gamma, A, B, \Delta $}
+        \UnaryInfC{$ \vdash \Gamma, B, A, \Delta $}
+        \DisplayProof \\
+        $\because$ ``$\land$'' is commutative.
+
+      \item % (vi)
+        \RightLabel{(\textit{with})}
+        \AxiomC{$ \vdash \Gamma, A $}
+        \AxiomC{$ \vdash \Gamma, B $}
+        \BinaryInfC{$ \vdash \Gamma, A \with B $}
+        \DisplayProof \\
+        We have to show that if $1 \in \Gamma \parr A$ and $1 \in \Gamma \parr B$
+        then $1 \in \Gamma \parr (A \with B)$.
+        Here we use distributivity of $\parr$ over $\with$: \\
+        \[ (\Gamma \parr A) \with (\Gamma \parr B) = \Gamma \parr (A \with B) \]
+        By definition of $\with$ and hypothesis, left hand side contains $1$,
+        and so does right hand side.
+
+      \item % (vii)
+        \RightLabel{(\textit{left plus})}
+        \AxiomC{$ \vdash \Gamma, A $}
+        \UnaryInfC{$ \vdash \Gamma, A \oplus B $}
+        \DisplayProof
+        \hskip 1.5em
+        \RightLabel{(\textit{right plus})}
+        \AxiomC{$ \vdash \Gamma, B $}
+        \UnaryInfC{$ \vdash \Gamma, A \oplus B $}
+        \DisplayProof \\
+        Similarly, we use half-distributivity of $\parr$ over $\oplus$: \\
+        \[ (\Gamma \parr A) \oplus (\Gamma \parr B) \subseteq \Gamma \parr (A \oplus B) \]
+      \item % (viii)
+        \RightLabel{(\textit{false})}
+        \AxiomC{$ \vdash \Gamma $}
+        \UnaryInfC{$ \vdash \Gamma, \bot $}
+        \DisplayProof \\
+        \[ \Gamma \parr \bot = \textbf{1} \multimap \Gamma \]
+        By definition, \textbf{1} is the smallest fact contains $1$
+        i. e. $\textbf{1} \subseteq \Gamma$
+        so that $\forall e, e \in \textbf{1} \Rightarrow e = 1e \in \Gamma$
+        hence $1 \in \textbf{1} \multimap \Gamma$.
+
+      \item % (ix)
+        \RightLabel{(\textit{times})}
+        \AxiomC{$ \vdash \Gamma, A $}
+        \AxiomC{$ \vdash \Delta, B $}
+        \BinaryInfC{$ \vdash \Gamma, A \otimes B, \Delta $}
+        \DisplayProof \\
+        We have to show that if $1 \in \Gamma \parr A$ and $1 \in \Delta \parr B$
+        then $1 \in \Gamma \parr \Delta \parr (A \otimes B)$.
+        Hypotheses can be transformed into
+        $1 \in \Gamma^\bot \multimap A$ and $1 \in \Delta^\bot \multimap B$ respectively.
+        Therefore, we have $\Gamma^\bot \subseteq A$ and $\Delta^\bot \subseteq B$
+        \begin{align*}
+          & \Rightarrow \Gamma^\bot.\Delta^\bot \subseteq A.B \\
+          & \Rightarrow (\Gamma^\bot.\Delta^\bot)^{\bot\bot} \subseteq (A.B)^{\bot\bot} \\
+          & \Rightarrow \Gamma^\bot \otimes \Delta^\bot \subseteq A \otimes B \\
+          & \Rightarrow \Gamma^\bot \otimes \Delta^\bot \multimap A \otimes B \ni 1 \\
+          & \Rightarrow \Gamma \parr \Delta \parr (A \otimes B) \ni 1
+        \end{align*}
+
+      \item % (x)
+        \RightLabel{(\textit{par})}
+        \AxiomC{$ \vdash \Gamma, A, B $}
+        \UnaryInfC{$ \vdash \Gamma, A \parr B $}
+        \DisplayProof \\
+        This is tautology. \hfill $\square$
+    \end{enumerate}
+  
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Future work}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Future work}
+
+  \begin{itemize}
+    \item Categorical semantics: symmetrical monoidal (closed) category
+    \item Computational aspect: Combinatorial linear logic, categorical and linear machine
+    \item Game semantics
+  \end{itemize}
+\end{frame}
+                          
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
