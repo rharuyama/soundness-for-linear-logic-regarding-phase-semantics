@@ -396,7 +396,7 @@
     \begin{align*}
       & xy \in X.Y :\Leftrightarrow x \in X \land y \in Y 
     \end{align*}
-    Connectives are interpreted in this way (more precisely, we are defining interpretation function from $formula$ to $\wp{(M)}$):
+    Let $X$ and $Y$ be fact. Connectives are interpreted in this way (more precisely, we are defining interpretation function from $formula$ to $\wp{(M)}$):
     \begin{align*}
      & X \otimes Y := (X.Y)^{\bot\bot} \\
      & X \parr   Y := (X^\bot.Y^\bot)^\bot \\
@@ -435,7 +435,8 @@
     Sequent which are provable in MALL are all valid in Phase Space \\
     i. e. \[
         \vdash \underbar{X} \Rightarrow 1 \in \underbar{X}
-    \]
+        \]
+        where \underbar{X} are all fact.
   \end{theorem}
 
     By straightforward induction on inference rules.
